@@ -50,6 +50,18 @@ public class Instruction {
         return new Instruction(new Operation(commandMode, addressingMode), address);
     }
 
+    /**
+     * Поскольку часть команд не подразумевает использование какой-либо адресации и работает только с {@code аккумулятором}
+     * есть отдельный метод, в котором передаются константные значения для типа адресации и значение адреса.
+     * <br>
+     * Можно использовать его для следующих команд:
+     * <ul>
+     *      <li>{@link Command#INP}</li>
+     *      <li>{@link Command#INCA}</li>
+     *      <li>{@link Command#CLEA}</li>
+     *      <li>{@link Command#OUT}</li>
+     * </ul>
+     */
     public static Instruction createImplied(Command commandMode) {
         return Instruction.create(commandMode, AddressingMode.DIRECT, 0xF);
     }
