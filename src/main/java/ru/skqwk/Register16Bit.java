@@ -5,7 +5,7 @@ package ru.skqwk;
  */
 public class Register16Bit {
     /**
-     * Хранит 16 битов
+     * Хранит 16 бит
      */
     private char value;
 
