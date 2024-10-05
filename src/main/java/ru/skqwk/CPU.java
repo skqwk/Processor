@@ -85,12 +85,7 @@ public class CPU {
             case CMP -> flags.setValue(acc.value() == cell.read() ? 0 : Flags.ZERO_FLAG);
             case INC -> acc.setValue(cell.read() + 1);
             case DEC -> acc.setValue(cell.read() - 1);
-            case JZ -> {
-                int result = flags.value() & Flags.ZERO_FLAG;
-                if (result != 0) {
-                    pc.setValue(address);
-                }
-            }
+            case JZ -> pc.setValue((flags.value() & Flags.ZERO_FLAG) != 0 ? address : pc.value());
             case CLEA -> acc.setValue(0);
             case INCA -> acc.setValue(acc.value() + 1);
             case INP -> acc.setValue(System.in.read());
