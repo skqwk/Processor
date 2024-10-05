@@ -2,6 +2,8 @@ package ru.skqwk;
 
 import lombok.Getter;
 
+import java.io.IOException;
+
 @Getter
 public class CPU {
     /**
@@ -52,62 +54,52 @@ public class CPU {
     public void step() {
         Instruction instruction = readNextInstruction();
         pc.incrementBy(instruction.size());
-        execute(instruction);
+        executeWrapped(instruction);
     }
 
-    private void execute(Instruction instruction) {
+    private void executeWrapped(Instruction instruction) {
+        try {
+            execute(instruction);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void execute(Instruction instruction) throws IOException {
+        log(instruction);
         Operation operation = instruction.getOperation();
         AddressingMode addressingMode = operation.getAddressingMode();
         Command commandCode = operation.getCommandCode();
         int address = instruction.getAddress();
 
         MemoryCell cell = defineMemoryCell(addressingMode, address);
-
-        System.out.printf("Execute instruction - %s\n", instruction);
-
         switch (commandCode) {
             case LDA -> acc.setValue(cell.read());
             case STA -> cell.write(acc.value());
-            case ADD -> {
-                int result = acc.value() + cell.read();
-                acc.setValue(result);
-            }
-            case SUB -> {
-                int result = acc.value() - cell.read();
-                acc.setValue(result);
-            }
-            case AND -> {
-                int result = acc.value() & cell.read();
-                acc.setValue(result);
-            }
-            case OR -> {
-                int result = acc.value() | cell.read();
-                acc.setValue(result);
-            }
-            case XOR -> throw new RuntimeException();
-            case COM -> throw new RuntimeException();
-            case CMP -> {
-                char read = cell.read();
-                if (acc.value() == read) {
-                    flags.setValue(0);
-                } else {
-                    flags.setValue(Flags.ZERO_FLAG);
-                }
-            }
+            case ADD -> acc.setValue(acc.value() + cell.read());
+            case SUB -> acc.setValue(acc.value() - cell.read());
+            case AND -> acc.setValue(acc.value() & cell.read());
+            case OR -> acc.setValue(acc.value() | cell.read());
+            case XOR -> acc.setValue(acc.value() ^ cell.read());
+            case COM -> acc.setValue(~ cell.read());
+            case CMP -> flags.setValue(acc.value() == cell.read() ? 0 : Flags.ZERO_FLAG);
             case INC -> acc.setValue(cell.read() + 1);
             case DEC -> acc.setValue(cell.read() - 1);
             case JZ -> {
                 int result = flags.value() & Flags.ZERO_FLAG;
                 if (result != 0) {
-                    // TODO: или тоже читать из cell.read() ?
                     pc.setValue(address);
                 }
             }
             case CLEA -> acc.setValue(0);
             case INCA -> acc.setValue(acc.value() + 1);
-            case INP -> throw new RuntimeException();
+            case INP -> acc.setValue(System.in.read());
             case OUT -> System.out.println((int) acc.value());
         }
+    }
+
+    private void log(Instruction instruction) {
+        System.out.printf("Execute instruction - %s\n", instruction);
     }
 
     /**
