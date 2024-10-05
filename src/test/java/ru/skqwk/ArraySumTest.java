@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static ru.skqwk.AddressingMode.*;
+import static ru.skqwk.Command.*;
+import static ru.skqwk.Registers.*;
+
 public class ArraySumTest {
     @Test
     void arraySumTest() {
@@ -20,20 +24,20 @@ public class ArraySumTest {
         dataMemory.getMemory()[14] = 8;
         dataMemory.getMemory()[15] = 7;
 
-        char[] instructions = new char[] {
-                Instruction.create(Command.LDA, AddressingMode.DIRECT, 1).toChar(),
-                Instruction.create(Command.STA, AddressingMode.REGISTER, Registers.A).toChar(),
-                Instruction.create(Command.ADD, AddressingMode.DIRECT, 0).toChar(),
-                Instruction.create(Command.STA, AddressingMode.REGISTER, Registers.B).toChar(),
-                Instruction.createImplied(Command.CLEA).toChar(),
-                Instruction.create(Command.ADD, AddressingMode.REGISTER_INDIRECT, Registers.A).toChar(),
-                Instruction.create(Command.STA, AddressingMode.REGISTER, Registers.C).toChar(),
-                Instruction.create(Command.INC, AddressingMode.REGISTER, Registers.A).toChar(),
-                Instruction.create(Command.STA, AddressingMode.REGISTER, Registers.A).toChar(),
-                Instruction.create(Command.CMP, AddressingMode.REGISTER, Registers.B).toChar(),
-                Instruction.create(Command.LDA, AddressingMode.REGISTER, Registers.C).toChar(),
-                Instruction.create(Command.JZ, AddressingMode.IMMEDIATE, 5).toChar(),
-                Instruction.createImplied(Command.OUT).toChar(),
+        char[] instructions = new char[]{
+                Instruction.create(LDA, DIRECT, 1).toChar(),
+                Instruction.create(STA, REGISTER, A).toChar(),
+                Instruction.create(ADD, DIRECT, 0).toChar(),
+                Instruction.create(STA, REGISTER, B).toChar(),
+                Instruction.createImplied(CLEA).toChar(),
+                Instruction.create(ADD, REGISTER_INDIRECT, A).toChar(),
+                Instruction.create(STA, REGISTER, C).toChar(),
+                Instruction.create(INC, REGISTER, A).toChar(),
+                Instruction.create(STA, REGISTER, A).toChar(),
+                Instruction.create(CMP, REGISTER, B).toChar(),
+                Instruction.create(LDA, REGISTER, C).toChar(),
+                Instruction.create(JZ, IMMEDIATE, 5).toChar(),
+                Instruction.createImplied(OUT).toChar(),
         };
 
         CPU cpu = new CPU(dataMemory, new InstructionMemory(instructions));
